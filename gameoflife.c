@@ -6,8 +6,8 @@ int main(int argc, char *argv[])
 {
   int g = -1, s = 0, t = 0, lengthOfFile;
   char *i = NULL, *o = NULL;
-  FILE *inputFile;
-  FILE *outputFile;
+  FILE *inputFile = NULL;
+  FILE *outputFile = NULL;
 
   for (int counter = 0; counter < argc; counter++)
   {
@@ -38,17 +38,7 @@ int main(int argc, char *argv[])
           }
         }
 
-        lengthOfFile = strlen(argv[counter + 1]);
-
-        i = calloc(lengthOfFile, sizeof(char));
-
-        if (i == NULL)
-        {
-          fprintf(stderr, "Error - memory for input file not allocated\n");
-          exit(128);
-        }
-
-        strcpy(i, argv[counter + 1]);
+        i = argv[counter + 1];
 
         if ((inputFile = fopen(i, "r")) == NULL)
         {
@@ -84,15 +74,8 @@ int main(int argc, char *argv[])
 
         lengthOfFile = strlen(argv[counter + 1]);
 
-        o = calloc(lengthOfFile, sizeof(char));
+        o = argv[counter + 1];
 
-        if (o == NULL)
-        {
-          fprintf(stderr, "\nError - memory for output file not allocated\nExiting...\n");
-          exit(128);
-        }
-
-        strcpy(o, argv[counter + 1]);
         // o[lengthOfFile] = '\0';
         break;
 
@@ -135,26 +118,34 @@ int main(int argc, char *argv[])
         break;
 
       case 's':
-        // if (s != 0)
-        // {
-        //   fprintf(stderr, "\nError - multiple instances of -s switch\nExiting...\n");
-        //   exit(128);
-        // }
 
         s = 1;
         break;
 
       case 't':
-        // if (t != 0)
-        // {
-        //   fprintf(stderr, "\nError - multiple instances of -t switch\nExiting...\n");
-        //   exit(128);
-        // }
 
         t = 1;
         break;
       }
     }
+  }
+
+  fseek(stdin, 0, SEEK_END);
+  int len = ftell(stdin);
+  rewind(stdin);
+  if (i && (len != 0))
+  {
+    fprintf(stderr, "Error - stdin and -i switch both given\n");
+    exit(128);
+  }
+
+  fseek(stdout, 0, SEEK_END);
+  len = ftell(stdout);
+  rewind(stdout);
+  if (o && (len != 0))
+  {
+    fprintf(stderr, "Error - stdout and -o switch both given\n");
+    exit(128);
   }
 
   struct universe v;
