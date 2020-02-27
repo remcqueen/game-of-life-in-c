@@ -19,17 +19,17 @@ int main(int argc, char *argv[])
 
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "Error - input file not specified\n");
+          fprintf(stderr, "Error: input file not specified\n");
           exit(128);
         }
 
         if (i != NULL)
         {
-          int difference = strcmp(i, strcat(argv[counter + 1], ".txt")) ? strcmp(i, strcat(argv[counter + 1], ".txt")) : strcmp(i, argv[counter + 1]);
+          int difference = strcmp(i, argv[counter + 1]);
 
           if (difference)
           {
-            fprintf(stderr, "Error - switch -i has two inconsistant entries: %s and %s\n", i, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -i has two inconsistant entries: %s and %s\n", i, argv[counter + 1]);
             exit(128);
           }
           else if (!difference)
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
         if ((inputFile = fopen(i, "r")) == NULL)
         {
-          fprintf(stderr, "Error - could not open input file with name %s\n", i);
+          fprintf(stderr, "Error: could not open input file with name %s\n", i);
           exit(128);
         }
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "\nError - output file not specified\n");
+          fprintf(stderr, "\nError: output file not specified\n");
           exit(128);
         }
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
           if (difference)
           {
-            fprintf(stderr, "Error - switch -o has two inconsistant entries: %s and %s\n", o, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -o has two inconsistant entries: %s and %s\n", o, argv[counter + 1]);
             exit(128);
           }
           else if (!difference)
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "\nError - number of generations not specified\nExiting...\n");
+          fprintf(stderr, "Error: number of generations not specified\nExiting...\n");
           exit(128);
         }
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
           if (!same)
           {
-            fprintf(stderr, "Error - switch -g has two inconsistant entries: %d and %s\n", g, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -g has two inconsistant entries: %d and %s\n", g, argv[counter + 1]);
             exit(128);
           }
           else if (same)
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
           int integerConvert = (int)argv[counter + 1][j];
           if (integerConvert < 48 || integerConvert > 57)
           {
-            fprintf(stderr, "\nError - number of generations must be an integer\nExiting...\n");
+            fprintf(stderr, "Error: number of generations must be an integer\n");
             exit(128);
           }
         }
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
   rewind(stdin);
   if (i && (len != 0))
   {
-    fprintf(stderr, "Error - stdin and -i switch both given\n");
+    fprintf(stderr, "Error: stdin and -i switch both given\n");
     exit(128);
   }
 
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
   rewind(stdout);
   if (o && (len != 0))
   {
-    fprintf(stderr, "Error - stdout and -o switch both given\n");
+    fprintf(stderr, "Error: stdout and -o switch both given\n");
     exit(128);
   }
 

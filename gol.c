@@ -12,7 +12,7 @@ void read_in_file(FILE *infile, struct universe *u)
 {
     if (infile == NULL)
     {
-        fprintf(stderr, "Error - file pointer does not exist");
+        fprintf(stderr, "Error: file pointer does not exist");
         exit(1);
     }
 
@@ -30,7 +30,7 @@ void read_in_file(FILE *infile, struct universe *u)
         stream_pointer = malloc(512);
         if (stream_pointer == NULL)
         {
-            fprintf(stderr, "Error - Failed to allocate memory\n");
+            fprintf(stderr, "Error: Failed to allocate memory\n");
             exit(1);
         }
         while (scanf("%c", &charecter) != EOF)
@@ -38,7 +38,7 @@ void read_in_file(FILE *infile, struct universe *u)
 
             if (charecter != '*' && charecter != '.' && charecter != '\n')
             {
-                fprintf(stderr, "Error - Invalid charecter given\n");
+                fprintf(stderr, "Error: Invalid charecter given\n");
                 exit(1);
             }
             else if (charecter == '*' || charecter == '.')
@@ -52,12 +52,12 @@ void read_in_file(FILE *infile, struct universe *u)
             {
                 if (row_length != 0 && tempColCounter != prevColCount)
                 {
-                    fprintf(stderr, "Error - Column lengths were not the same\n");
+                    fprintf(stderr, "Error: Column lengths were not the same\n");
                     exit(1);
                 }
                 if (tempColCounter < 1 || tempColCounter > 512)
                 {
-                    fprintf(stderr, "Error - Invalid row length\n");
+                    fprintf(stderr, "Error: Invalid row length\n");
                     exit(1);
                 }
                 row_length++;
@@ -69,7 +69,7 @@ void read_in_file(FILE *infile, struct universe *u)
                     stream_pointer = realloc(stream_pointer, (row_length + 1) * prevColCount);
                     if (stream_pointer == NULL)
                     {
-                        fprintf(stderr, "Error - Failed to reallocate memory\n");
+                        fprintf(stderr, "Error: Failed to reallocate memory\n");
                         exit(1);
                     }
                 }
@@ -80,7 +80,7 @@ void read_in_file(FILE *infile, struct universe *u)
         stream_pointer = realloc(stream_pointer, row_length * prevColCount);
         if (stream_pointer == NULL)
         {
-            fprintf(stderr, "Error - Failed to reallocate memory\n");
+            fprintf(stderr, "Error: Failed to reallocate memory\n");
             exit(1);
         }
     }
@@ -109,10 +109,15 @@ void read_in_file(FILE *infile, struct universe *u)
                 row_length++;
                 lastChar = 1;
             }
+            else if (charecter == '\n' && lastChar)
+            {
+                fprintf(stderr, "Error: Invalid file format\n");
+                exit(1);
+            }
 
             else if (charecter != '\0' || charecter != EOF || charecter != '\n')
             {
-                fprintf(stderr, "Error - invalid character detected in input file\n");
+                fprintf(stderr, "Error: invalid character detected in input file\n");
                 exit(1);
             }
 
@@ -126,7 +131,7 @@ void read_in_file(FILE *infile, struct universe *u)
         }
         else
         {
-            fprintf(stderr, "Error - input file must end in a newline\n");
+            fprintf(stderr, "Error: input file must end in a newline\n");
             exit(1);
         }
 
@@ -140,7 +145,7 @@ void read_in_file(FILE *infile, struct universe *u)
     u->current_matrix = malloc(sizeof(u->current_matrix) * row_length);
     if (u->current_matrix == NULL)
     {
-        fprintf(stderr, "Error - Failed to allocate memory\n");
+        fprintf(stderr, "Error: Failed to allocate memory\n");
         exit(1);
     }
     for (int i = 0; i < row_length; i++)
@@ -148,7 +153,7 @@ void read_in_file(FILE *infile, struct universe *u)
         u->current_matrix[i] = malloc(sizeof(u->current_matrix) * column_length);
         if (u->current_matrix[i] == NULL)
         {
-            fprintf(stderr, "Error - Failed to allocate memory\n");
+            fprintf(stderr, "Error: Failed to allocate memory\n");
             exit(1);
         }
     }
@@ -156,7 +161,7 @@ void read_in_file(FILE *infile, struct universe *u)
     u->next_matrix = malloc(sizeof(u->next_matrix) * row_length);
     if (u->next_matrix == NULL)
     {
-        fprintf(stderr, "Error - Failed to allocate memory\n");
+        fprintf(stderr, "Error: Failed to allocate memory\n");
         exit(1);
     }
     for (int i = 0; i < row_length; i++)
@@ -164,7 +169,7 @@ void read_in_file(FILE *infile, struct universe *u)
         u->next_matrix[i] = malloc(sizeof(u->next_matrix) * column_length);
         if (u->next_matrix[i] == NULL)
         {
-            fprintf(stderr, "Error - Failed to allocate memory\n");
+            fprintf(stderr, "Error: Failed to allocate memory\n");
             exit(1);
         }
     }
@@ -231,7 +236,7 @@ void write_out_file(FILE *outfile, struct universe *u)
 
     if (outfile == NULL)
     {
-        fprintf(stderr, "\nError - output file not found\nExiting...\n");
+        fprintf(stderr, "\nError: output file not found\nExiting...\n");
         exit(1);
     }
 
