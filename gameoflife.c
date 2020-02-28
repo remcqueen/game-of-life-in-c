@@ -122,13 +122,13 @@ int main(int argc, char *argv[])
           }
         }
 
-        // Checks string length will not overflow lengthOfString
-        // Checks for zero if length exceeds long storage and causes strtol to return 0
-        if (strtol(strlen(argv[counter + 1]), NULL, 0) > INT_MAX || strtol(strlen(argv[counter + 1]), NULL, 0) == 0)
-        {
-          fprintf(stderr, "Error: Length of generations given exceeds max integer storage\n");
-          exit(1);
-        }
+        // // Checks string length will not overflow lengthOfString
+        // // Checks for zero if length exceeds long storage and causes strtol to return 0
+        // if (strtol(strlen(argv[counter + 1]), NULL, 0) > INT_MAX || strtol(strlen(argv[counter + 1]), NULL, 0) == 0)
+        // {
+        //   fprintf(stderr, "Error: Length of generations given exceeds max integer storage\n");
+        //   exit(1);
+        // }
 
         int lengthOfString = strlen(argv[counter + 1]);
 
