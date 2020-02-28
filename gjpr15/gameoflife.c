@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <limits.h>
 #include "gol.h"
 int main(int argc, char *argv[])
 {
@@ -15,7 +13,7 @@ int main(int argc, char *argv[])
   FILE *outputFile = NULL;
 
   // for loop through each argument given
-  for (int counter = 1; counter < argc; counter++)
+  for (int counter = 0; counter < argc; counter++)
   {
     // checks if argument is a flag
     if (argv[counter][0] == '-')
@@ -28,7 +26,7 @@ int main(int argc, char *argv[])
         // checks if -i was given as final argument
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "Error: Input file not specified\n");
+          fprintf(stderr, "Error: input file not specified\n");
           exit(128);
         }
 
@@ -39,7 +37,7 @@ int main(int argc, char *argv[])
 
           if (difference)
           {
-            fprintf(stderr, "Error: Switch -i has two inconsistant entries: %s and %s\n", i, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -i has two inconsistant entries: %s and %s\n", i, argv[counter + 1]);
             exit(128);
           }
           else if (!difference)
@@ -54,12 +52,9 @@ int main(int argc, char *argv[])
         // Checks if file exists and can be opened
         if ((inputFile = fopen(i, "r")) == NULL)
         {
-          fprintf(stderr, "Error: Could not open input file with name %s\n", i);
+          fprintf(stderr, "Error: could not open input file with name %s\n", i);
           exit(128);
         }
-
-        // increase counter to skip checking next argument
-        counter++;
 
         break;
 
@@ -68,7 +63,7 @@ int main(int argc, char *argv[])
         // checks if -i was given as final argument
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "\nError: Output file not specified\n");
+          fprintf(stderr, "\nError: output file not specified\n");
           exit(128);
         }
 
@@ -79,7 +74,7 @@ int main(int argc, char *argv[])
 
           if (difference)
           {
-            fprintf(stderr, "Error: Switch -o has two inconsistant entries: %s and %s\n", o, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -o has two inconsistant entries: %s and %s\n", o, argv[counter + 1]);
             exit(128);
           }
           else if (!difference)
@@ -91,9 +86,6 @@ int main(int argc, char *argv[])
         // Stores output file name
         o = argv[counter + 1];
 
-        // increase counter to skip checking next argument
-        counter++;
-
         break;
 
       case 'g':
@@ -101,7 +93,7 @@ int main(int argc, char *argv[])
         // checks if -g was given as final argument
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "Error: Number of generations not specified\nExiting...\n");
+          fprintf(stderr, "Error: number of generations not specified\nExiting...\n");
           exit(128);
         }
 
@@ -113,21 +105,13 @@ int main(int argc, char *argv[])
 
           if (!same)
           {
-            fprintf(stderr, "Error: Switch -g has two inconsistant entries: %d and %s\n", g, argv[counter + 1]);
+            fprintf(stderr, "Error: switch -g has two inconsistant entries: %d and %s\n", g, argv[counter + 1]);
             exit(128);
           }
           else if (same)
           {
             break;
           }
-        }
-
-        // Checks string length will not overflow lengthOfString
-        // Checks for zero if length exceeds long storage and causes strtol to return 0
-        if (strtol(strlen(argv[counter + 1]), NULL, 0) > INT_MAX || strtol(strlen(argv[counter + 1]), NULL, 0) == 0)
-        {
-          fprintf(stderr, "Error: Length of generations given exceeds max integer storage\n");
-          exit(1);
         }
 
         int lengthOfString = strlen(argv[counter + 1]);
@@ -138,21 +122,13 @@ int main(int argc, char *argv[])
           int integerConvert = (int)argv[counter + 1][j];
           if (integerConvert < 48 || integerConvert > 57)
           {
-            fprintf(stderr, "Error: Number of generations must be an integer\n");
+            fprintf(stderr, "Error: number of generations must be an integer\n");
             exit(128);
           }
         }
 
-        // Ensures that the user did not input a generation size larger than max int value which would cause overflow
-        if (strtol(argv[counter + 1], NULL, 0) > INT_MAX || (strtol(argv[counter + 1], NULL, 0) == 0 && lengthOfString != 1))
-        {
-          fprintf(stderr, "Error: generations given will exceed maximum integer storage\n");
-          exit(1);
-        }
-
-        // increase counter to skip checking next argument
-        g = strtol(argv[counter + 1], NULL, 0);
-        counter++;
+        // converts argument to integer and stores
+        g = atoi(argv[counter + 1]);
         break;
 
       case 's':
@@ -167,16 +143,9 @@ int main(int argc, char *argv[])
 
       // default case for invalid/unknown switches given
       default:
-        fprintf(stderr, "Error: Invalid command line switch given\n");
+        fprintf(stderr, "Error: invalid command line switch given\n");
         exit(128);
       }
-    }
-
-    // error check for unknown commands given as input
-    else
-    {
-      fprintf(stderr, "Error: Invalid command line switch given\n");
-      exit(128);
     }
   }
 

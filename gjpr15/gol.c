@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <limits.h>
 #include "gol.h"
 
 // Function for returning the signed modulous
@@ -16,7 +14,7 @@ void read_in_file(FILE *infile, struct universe *u)
     // checks if the file pointer exists
     if (infile == NULL)
     {
-        fprintf(stderr, "Error: File pointer does not exist");
+        fprintf(stderr, "Error: file pointer does not exist");
         exit(1);
     }
 
@@ -30,12 +28,6 @@ void read_in_file(FILE *infile, struct universe *u)
     int row_length = 0;
     int column_length = 0;
     char charecter = '\0';
-
-    // tempColCounter counts the number of columns on each new row
-    int tempColCounter = 0;
-    // prevColCount is compared to tempColCounter to ensure column lengths are equal
-    int prevColCount = 0;
-
     // Stream pointer will point to a string that will contain the users input as they type it
     // We be dynamically allocated and reallocated as they type
     char *stream_pointer = NULL;
@@ -58,6 +50,11 @@ void read_in_file(FILE *infile, struct universe *u)
             ungetc(charecter, infile);
             charecter = '\0';
         }
+
+        // tempColCounter counts the number of columns on each new row
+        int tempColCounter = 0;
+        // prevColCount is compared to tempColCounter to ensure column lengths are equal
+        int prevColCount = 0;
 
         // Allocates a 512 stream pointer initially to accept up to 512 columns
         stream_pointer = malloc(512);
@@ -127,8 +124,6 @@ void read_in_file(FILE *infile, struct universe *u)
     else
 
     {
-        prevColCount = -1;
-
         row_length = 1;
 
         column_length = 1;
@@ -144,24 +139,11 @@ void read_in_file(FILE *infile, struct universe *u)
             if (charecter == '*' || charecter == '.')
             {
                 column_length++;
-                tempColCounter++;
                 lastChar = 0;
             }
             // checks if the last charecter was an end of line
             else if (charecter == '\n' && !lastChar)
             {
-                if (row_length != 0 && prevColCount != -1 && tempColCounter != prevColCount)
-                {
-                    fprintf(stderr, "Error: Column lengths were not the same in inputfile\n");
-                    exit(1);
-                }
-                if (tempColCounter < 1 || tempColCounter > 512)
-                {
-                    fprintf(stderr, "Error: Invalid row length in inputfile\n");
-                    exit(1);
-                }
-                prevColCount = tempColCounter;
-                tempColCounter = 0;
                 row_length++;
                 lastChar = 1;
             }
@@ -173,7 +155,7 @@ void read_in_file(FILE *infile, struct universe *u)
 
             else if (charecter != '\0' || charecter != EOF || charecter != '\n')
             {
-                fprintf(stderr, "Error: Invalid character detected in input file\n");
+                fprintf(stderr, "Error: invalid character detected in input file\n");
                 exit(1);
             }
 
@@ -188,7 +170,7 @@ void read_in_file(FILE *infile, struct universe *u)
         // If final charecter was not an end of line, causes error
         else
         {
-            fprintf(stderr, "Error: Input file must end in a newline\n");
+            fprintf(stderr, "Error: input file must end in a newline\n");
             exit(1);
         }
     }
@@ -290,7 +272,7 @@ void write_out_file(FILE *outfile, struct universe *u)
     // error check input
     if (outfile == NULL)
     {
-        fprintf(stderr, "Error: Output file not found\n");
+        fprintf(stderr, "Error: output file not found\n");
         exit(1);
     }
 
@@ -474,14 +456,6 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
             if ((*rule)(u, c, r))
             {
                 u->next_matrix[r][c] = '*';
-
-                // Error check to prevent int overflow
-                if (u->total_alive == INT_MAX)
-                {
-                    fprintf(stderr, "Error: total alive cells will exceed maximum integer storage\n");
-                    exit(1);
-                }
-
                 u->current_alive += 1;
                 u->total_alive += 1;
             }
