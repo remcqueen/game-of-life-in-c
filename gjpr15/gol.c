@@ -1,12 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <limits.h>
 #include "gol.h"
 
 // Function for returning the signed modulous
 static int mod(int number, int base)
 {
-    return (number < 0 ? ((number % base) + base) % base : number % base);
+    if (number < 0)
+    {
+        return ((number % base) + base) % base;
+    }
+    else
+    {
+        return number % base;
+    }
 }
 
 void read_in_file(FILE *infile, struct universe *u)
@@ -14,7 +23,7 @@ void read_in_file(FILE *infile, struct universe *u)
     // checks if the file pointer exists
     if (infile == NULL)
     {
-        fprintf(stderr, "Error: file pointer does not exist");
+        fprintf(stderr, "Error: File pointer does not exist");
         exit(1);
     }
 
@@ -28,12 +37,18 @@ void read_in_file(FILE *infile, struct universe *u)
     int row_length = 0;
     int column_length = 0;
     char charecter = '\0';
+
+    // temp_col_counter counts the number of columns on each new row
+    int temp_col_counter = 0;
+    // prev_col_count is compared to temp_col_counter to ensure column lengths are equal
+    int prev_col_count = 0;
+
     // Stream pointer will point to a string that will contain the users input as they type it
     // We be dynamically allocated and reallocated as they type
     char *stream_pointer = NULL;
 
     // if length is 0 the file pointer is not a file, or points to an empty file
-    if (len == 0)
+    if (!(len > 0))
     {
         // gets the character of the current position in the input stream
         charecter = getc(infile);
@@ -50,11 +65,6 @@ void read_in_file(FILE *infile, struct universe *u)
             ungetc(charecter, infile);
             charecter = '\0';
         }
-
-        // tempColCounter counts the number of columns on each new row
-        int tempColCounter = 0;
-        // prevColCount is compared to tempColCounter to ensure column lengths are equal
-        int prevColCount = 0;
 
         // Allocates a 512 stream pointer initially to accept up to 512 columns
         stream_pointer = malloc(512);
@@ -79,30 +89,30 @@ void read_in_file(FILE *infile, struct universe *u)
             {
                 stream_pointer[column_length] = charecter;
                 column_length++;
-                tempColCounter++;
+                temp_col_counter++;
             }
 
             // If user presses enter it checks if row is in valid range
             else if (charecter == '\n')
             {
-                if (row_length != 0 && tempColCounter != prevColCount)
+                if (row_length != 0 && temp_col_counter != prev_col_count)
                 {
                     fprintf(stderr, "Error: Column lengths were not the same\n");
                     exit(1);
                 }
-                if (tempColCounter < 1 || tempColCounter > 512)
+                if (temp_col_counter < 1 || temp_col_counter > 512)
                 {
                     fprintf(stderr, "Error: Invalid row length\n");
                     exit(1);
                 }
                 row_length++;
 
-                prevColCount = tempColCounter;
-                tempColCounter = 0;
+                prev_col_count = temp_col_counter;
+                temp_col_counter = 0;
                 // Increases the size of stream_pointer to accept the next row
                 if (row_length > 0)
                 {
-                    stream_pointer = realloc(stream_pointer, (row_length + 1) * prevColCount);
+                    stream_pointer = realloc(stream_pointer, (row_length + 1) * prev_col_count);
                     if (stream_pointer == NULL)
                     {
                         fprintf(stderr, "Error: Failed to reallocate memory\n");
@@ -112,8 +122,14 @@ void read_in_file(FILE *infile, struct universe *u)
             }
         }
 
+        if (temp_col_counter != 0)
+        {
+            fprintf(stderr, "Error: Incorrect format given\n");
+            exit(1);
+        }
+
         // Reduces the size of stream pointer by one row as the user terminated on this row
-        stream_pointer = realloc(stream_pointer, row_length * prevColCount);
+        stream_pointer = realloc(stream_pointer, row_length * prev_col_count);
         if (stream_pointer == NULL)
         {
             fprintf(stderr, "Error: Failed to reallocate memory\n");
@@ -124,6 +140,8 @@ void read_in_file(FILE *infile, struct universe *u)
     else
 
     {
+        prev_col_count = -1;
+
         row_length = 1;
 
         column_length = 1;
@@ -131,7 +149,7 @@ void read_in_file(FILE *infile, struct universe *u)
         charecter = fgetc(infile);
 
         // boolean for if the last char was a blank file
-        int lastChar = 0;
+        int last_char = 0;
 
         // uses getc to move accross each character to validate and find number of rows and columns
         while (charecter != EOF)
@@ -139,23 +157,36 @@ void read_in_file(FILE *infile, struct universe *u)
             if (charecter == '*' || charecter == '.')
             {
                 column_length++;
-                lastChar = 0;
+                temp_col_counter++;
+                last_char = 0;
             }
             // checks if the last charecter was an end of line
-            else if (charecter == '\n' && !lastChar)
+            else if (charecter == '\n' && !last_char)
             {
+                if (row_length != 0 && prev_col_count != -1 && temp_col_counter != prev_col_count)
+                {
+                    fprintf(stderr, "Error: Column lengths were not the same in inputfile\n");
+                    exit(1);
+                }
+                if (temp_col_counter < 1 || temp_col_counter > 512)
+                {
+                    fprintf(stderr, "Error: Invalid row length in inputfile\n");
+                    exit(1);
+                }
+                prev_col_count = temp_col_counter;
+                temp_col_counter = 0;
                 row_length++;
-                lastChar = 1;
+                last_char = 1;
             }
-            else if (charecter == '\n' && lastChar)
+            else if (charecter == '\n' && last_char)
             {
                 fprintf(stderr, "Error: Invalid file format\n");
                 exit(1);
             }
 
-            else if (charecter != '\0' || charecter != EOF || charecter != '\n')
+            else if (charecter != '\0' && charecter != EOF && charecter != '\n')
             {
-                fprintf(stderr, "Error: invalid character detected in input file\n");
+                fprintf(stderr, "Error: Invalid character detected in input file\n");
                 exit(1);
             }
 
@@ -163,14 +194,14 @@ void read_in_file(FILE *infile, struct universe *u)
         }
 
         // If final charecter was an end of line, removes that row
-        if (lastChar)
+        if (last_char)
         {
             row_length--;
         }
         // If final charecter was not an end of line, causes error
         else
         {
-            fprintf(stderr, "Error: input file must end in a newline\n");
+            fprintf(stderr, "Error: Input file must end in a newline\n");
             exit(1);
         }
     }
@@ -206,7 +237,7 @@ void read_in_file(FILE *infile, struct universe *u)
     u->current_alive = 0;
     u->generations = 0;
 
-    if (len != 0)
+    if (len > 0)
     {
         rewind(infile);
     }
@@ -219,7 +250,7 @@ void read_in_file(FILE *infile, struct universe *u)
         for (int column = 0; column < column_length; column++)
         {
             // if infile is a valid file pointer, get next charecter
-            if (len != 0)
+            if (len > 0)
             {
                 charecter = fgetc(infile);
             }
@@ -251,7 +282,7 @@ void read_in_file(FILE *infile, struct universe *u)
     }
 
     // if valid file was given
-    if (len != 0)
+    if (len > 0)
     {
         fclose(infile);
     }
@@ -266,22 +297,22 @@ void read_in_file(FILE *infile, struct universe *u)
 
 void write_out_file(FILE *outfile, struct universe *u)
 {
-    int numColumns = u->column_length;
-    int numRows = u->row_length;
+    int num_columns = u->column_length;
+    int num_rows = u->row_length;
 
     // error check input
     if (outfile == NULL)
     {
-        fprintf(stderr, "Error: output file not found\n");
+        fprintf(stderr, "Error: Output file not found\n");
         exit(1);
     }
 
     // go through each index of 2d array and print to infile
-    for (int rowCounter = 0; rowCounter < numRows; rowCounter++)
+    for (int row_counter = 0; row_counter < num_rows; row_counter++)
     {
-        for (int columnCounter = 0; columnCounter < numColumns; columnCounter++)
+        for (int column_counter = 0; column_counter < num_columns; column_counter++)
         {
-            fprintf(outfile, "%c", u->current_matrix[rowCounter][columnCounter]);
+            fprintf(outfile, "%c", u->current_matrix[row_counter][column_counter]);
         }
         fprintf(outfile, "\n");
     }
@@ -456,6 +487,14 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
             if ((*rule)(u, c, r))
             {
                 u->next_matrix[r][c] = '*';
+
+                // Error check to prevent int overflow
+                if (u->total_alive == INT_MAX)
+                {
+                    fprintf(stderr, "Error: total alive cells will exceed maximum integer storage\n");
+                    exit(1);
+                }
+
                 u->current_alive += 1;
                 u->total_alive += 1;
             }
