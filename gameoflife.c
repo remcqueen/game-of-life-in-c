@@ -219,6 +219,8 @@ int main(int argc, char *argv[])
     g = 5;
   }
 
+  printf("Performing evolves\n");
+
   for (int iteration = 0; iteration < g; iteration++)
   {
     if (t)
@@ -230,6 +232,8 @@ int main(int argc, char *argv[])
       evolve(&v, will_be_alive);
     }
   }
+
+  printf("Performing writeout\n");
 
   if (o)
   {
