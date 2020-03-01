@@ -67,6 +67,8 @@ void read_in_file(FILE *infile, struct universe *u)
             exit(1);
         }
 
+        printf("Assume user input\n");
+
         // While loop scans each character user inputs
         while (scanf("%c", &charecter) != EOF)
         {
@@ -90,6 +92,7 @@ void read_in_file(FILE *infile, struct universe *u)
             {
                 if (row_length != 0 && tempColCounter != prevColCount)
                 {
+                    printf("Tempcolcount: %d\nprevColCount: %d\n", tempColCounter, prevColCount);
                     fprintf(stderr, "Error: Column lengths were not the same\n");
                     exit(1);
                 }
@@ -127,6 +130,7 @@ void read_in_file(FILE *infile, struct universe *u)
     else
 
     {
+        printf("Assume file input\n");
         prevColCount = -1;
 
         row_length = 1;
