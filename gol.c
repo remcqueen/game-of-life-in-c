@@ -139,7 +139,7 @@ void read_in_file(FILE *infile, struct universe *u)
         int lastChar = 0;
 
         // uses getc to move accross each character to validate and find number of rows and columns
-        while (charecter != EOF)
+        while (charecter != '\0')
         {
             if (charecter == '*' || charecter == '.')
             {
