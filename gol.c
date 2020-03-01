@@ -90,7 +90,6 @@ void read_in_file(FILE *infile, struct universe *u)
             {
                 if (row_length != 0 && tempColCounter != prevColCount)
                 {
-                    printf("Tempcolcount: %d\nprevColCount: %d\n", tempColCounter, prevColCount);
                     fprintf(stderr, "Error: Column lengths were not the same\n");
                     exit(1);
                 }
