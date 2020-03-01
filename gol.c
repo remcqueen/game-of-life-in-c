@@ -139,7 +139,7 @@ void read_in_file(FILE *infile, struct universe *u)
         int lastChar = 0;
 
         // uses getc to move accross each character to validate and find number of rows and columns
-        while (charecter != '\0')
+        while (charecter != EOF)
         {
             if (charecter == '*' || charecter == '.')
             {
@@ -171,8 +171,9 @@ void read_in_file(FILE *infile, struct universe *u)
                 exit(1);
             }
 
-            else if (charecter != '\0' || charecter != EOF || charecter != '\n')
+            else if (charecter != '\0' && charecter != EOF && charecter != '\n')
             {
+                printf("%c\n", charecter);
                 fprintf(stderr, "Error: Invalid character detected in input file\n");
                 exit(1);
             }
