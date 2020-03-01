@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
   for (int counter = 1; counter < argc; counter++)
   {
     // checks if argument is a flag
-    if (argv[counter][0] == '-')
+    if (argv[counter][0] == '-' && strlen(argv[counter]) == 2)
     {
       // Switch case for each flag given
       switch (argv[counter][1])
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         if (counter + 2 > argc)
         {
           fprintf(stderr, "Error: Input file not specified\n");
-          exit(128);
+          exit(1);
         }
 
         // if -i flag was already given, checks if the filename was the same
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
           if (difference)
           {
             fprintf(stderr, "Error: Switch -i has two inconsistant entries: %s and %s\n", i, argv[counter + 1]);
-            exit(128);
+            exit(1);
           }
           else if (!difference)
           {
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         if ((inputFile = fopen(i, "r")) == NULL)
         {
           fprintf(stderr, "Error: Could not open input file with name %s\n", i);
-          exit(128);
+          exit(1);
         }
 
         // increase counter to skip checking next argument
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
         if (counter + 2 > argc)
         {
           fprintf(stderr, "\nError: Output file not specified\n");
-          exit(128);
+          exit(1);
         }
 
         // change to check if new -o is the same file
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
           if (difference)
           {
             fprintf(stderr, "Error: Switch -o has two inconsistant entries: %s and %s\n", o, argv[counter + 1]);
-            exit(128);
+            exit(1);
           }
           else if (!difference)
           {
@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
         // checks if -g was given as final argument
         if (counter + 2 > argc)
         {
-          fprintf(stderr, "Error: Number of generations not specified\nExiting...\n");
-          exit(128);
+          fprintf(stderr, "Error: Number of generations not specified\n");
+          exit(1);
         }
 
         // checks if -g switch has been given before
@@ -114,21 +114,13 @@ int main(int argc, char *argv[])
           if (!same)
           {
             fprintf(stderr, "Error: Switch -g has two inconsistant entries: %d and %s\n", g, argv[counter + 1]);
-            exit(128);
+            exit(1);
           }
           else if (same)
           {
             break;
           }
         }
-
-        // // Checks string length will not overflow lengthOfString
-        // // Checks for zero if length exceeds long storage and causes strtol to return 0
-        // if (strtol(strlen(argv[counter + 1]), NULL, 0) > INT_MAX || strtol(strlen(argv[counter + 1]), NULL, 0) == 0)
-        // {
-        //   fprintf(stderr, "Error: Length of generations given exceeds max integer storage\n");
-        //   exit(1);
-        // }
 
         int lengthOfString = strlen(argv[counter + 1]);
 
@@ -139,7 +131,7 @@ int main(int argc, char *argv[])
           if (integerConvert < 48 || integerConvert > 57)
           {
             fprintf(stderr, "Error: Number of generations must be an integer\n");
-            exit(128);
+            exit(1);
           }
         }
 
@@ -168,7 +160,7 @@ int main(int argc, char *argv[])
       // default case for invalid/unknown switches given
       default:
         fprintf(stderr, "Error: Invalid command line switch given\n");
-        exit(128);
+        exit(1);
       }
     }
 
@@ -176,30 +168,8 @@ int main(int argc, char *argv[])
     else
     {
       fprintf(stderr, "Error: Invalid command line switch given\n");
-      exit(128);
+      exit(1);
     }
-  }
-
-  // checks if stdin has stored a file
-  fseek(stdin, 0, SEEK_END);
-  int len = ftell(stdin);
-  rewind(stdin);
-  // checks if -i and stdin both were given
-  if (i && (len != 0))
-  {
-    fprintf(stderr, "Error: stdin and -i switch both given\n");
-    exit(128);
-  }
-
-  // checks if stdout has stored a file
-  fseek(stdout, 0, SEEK_END);
-  len = ftell(stdout);
-  rewind(stdout);
-  // checks if -o and stdout were both given
-  if (o && (len != 0))
-  {
-    fprintf(stderr, "Error: stdout and -o switch both given\n");
-    exit(128);
   }
 
   struct universe v;
@@ -219,8 +189,6 @@ int main(int argc, char *argv[])
     g = 5;
   }
 
-  printf("Performing evolves\n");
-
   for (int iteration = 0; iteration < g; iteration++)
   {
     if (t)
@@ -232,8 +200,6 @@ int main(int argc, char *argv[])
       evolve(&v, will_be_alive);
     }
   }
-
-  printf("Performing writeout\n");
 
   if (o)
   {

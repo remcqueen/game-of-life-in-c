@@ -67,8 +67,6 @@ void read_in_file(FILE *infile, struct universe *u)
             exit(1);
         }
 
-        printf("Assume user input\n");
-
         // While loop scans each character user inputs
         while (scanf("%c", &charecter) != EOF)
         {
@@ -118,8 +116,6 @@ void read_in_file(FILE *infile, struct universe *u)
             }
         }
 
-        printf("EOF Detected\n");
-
         // Reduces the size of stream pointer by one row as the user terminated on this row
         stream_pointer = realloc(stream_pointer, row_length * prevColCount);
         if (stream_pointer == NULL)
@@ -132,7 +128,6 @@ void read_in_file(FILE *infile, struct universe *u)
     else
 
     {
-        printf("Assume file input\n");
         prevColCount = -1;
 
         row_length = 1;
@@ -179,7 +174,6 @@ void read_in_file(FILE *infile, struct universe *u)
 
             else if (charecter != '\0' && charecter != EOF && charecter != '\n')
             {
-                printf("%c\n", charecter);
                 fprintf(stderr, "Error: Invalid character detected in input file\n");
                 exit(1);
             }
@@ -199,8 +193,6 @@ void read_in_file(FILE *infile, struct universe *u)
             exit(1);
         }
     }
-
-    printf("Allocating memory for matrix\n");
 
     // calculates number of columns
     column_length /= row_length;
@@ -240,8 +232,6 @@ void read_in_file(FILE *infile, struct universe *u)
 
     int counter = 0;
 
-    printf("Storing data in matrix\n");
-
     // Stores the file or user input into the 2d array
     for (int row = 0; row < row_length; row++)
     {
@@ -279,8 +269,6 @@ void read_in_file(FILE *infile, struct universe *u)
         }
     }
 
-    printf("Completed storing data\n");
-
     // if valid file was given
     if (len > 0)
     {
@@ -291,8 +279,6 @@ void read_in_file(FILE *infile, struct universe *u)
     {
         free(stream_pointer);
     }
-
-    printf("Completed storing data\n");
 
     return;
 }
