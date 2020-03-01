@@ -115,6 +115,12 @@ void read_in_file(FILE *infile, struct universe *u)
             }
         }
 
+        if (tempColCounter != 0)
+        {
+            fprintf(stderr, "Error: Incorrect format given\n");
+            exit(1);
+        }
+
         // Reduces the size of stream pointer by one row as the user terminated on this row
         stream_pointer = realloc(stream_pointer, row_length * prevColCount);
         if (stream_pointer == NULL)
