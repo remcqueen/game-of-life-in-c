@@ -233,7 +233,7 @@ void read_in_file(FILE *infile, struct universe *u)
     u->current_alive = 0;
     u->generations = 0;
 
-    if (len != 0)
+    if (len > 0)
     {
         rewind(infile);
     }
@@ -248,7 +248,7 @@ void read_in_file(FILE *infile, struct universe *u)
         for (int column = 0; column < column_length; column++)
         {
             // if infile is a valid file pointer, get next charecter
-            if (len != 0)
+            if (len > 0)
             {
                 charecter = fgetc(infile);
             }
@@ -279,8 +279,10 @@ void read_in_file(FILE *infile, struct universe *u)
         }
     }
 
+    printf("Completed storing data\n");
+
     // if valid file was given
-    if (len != 0)
+    if (len > 0)
     {
         fclose(infile);
     }
@@ -289,6 +291,8 @@ void read_in_file(FILE *infile, struct universe *u)
     {
         free(stream_pointer);
     }
+
+    printf("Completed storing data\n");
 
     return;
 }
