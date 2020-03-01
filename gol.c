@@ -41,7 +41,7 @@ void read_in_file(FILE *infile, struct universe *u)
     char *stream_pointer = NULL;
 
     // if length is 0 the file pointer is not a file, or points to an empty file
-    if (len == 0)
+    if (!(len > 0))
     {
         // gets the character of the current position in the input stream
         charecter = getc(infile);
