@@ -200,6 +200,8 @@ void read_in_file(FILE *infile, struct universe *u)
         }
     }
 
+    printf("Allocating memory for matrix\n");
+
     // calculates number of columns
     column_length /= row_length;
 
@@ -237,6 +239,8 @@ void read_in_file(FILE *infile, struct universe *u)
     }
 
     int counter = 0;
+
+    printf("Storing data in matrix\n");
 
     // Stores the file or user input into the 2d array
     for (int row = 0; row < row_length; row++)
