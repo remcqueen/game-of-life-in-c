@@ -118,6 +118,8 @@ void read_in_file(FILE *infile, struct universe *u)
             }
         }
 
+        printf("EOF Detected\n");
+
         // Reduces the size of stream pointer by one row as the user terminated on this row
         stream_pointer = realloc(stream_pointer, row_length * prevColCount);
         if (stream_pointer == NULL)
